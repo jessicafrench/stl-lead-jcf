@@ -1,0 +1,73 @@
+---
+title: "Stl Lead Inequity"
+author: "Jessica French"
+format: html
+editor: visual
+fig-height: 5
+fig-width: 6
+---
+
+## **Attach Packages**
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+library(skimr)
+library(dplyr)
+```
+
+## **Read in Data**
+
+```{r}
+stl_lead <- read_csv(here::here("data", "stl_blood_lead.csv"))
+```
+
+## data exploration
+
+```{r}
+skim(stl_lead)
+#clean column names
+stl_lead <- janitor::clean_names(stl_lead)
+```
+
+create new data frame with proportion white column added
+```{r}
+stl_lead_prop <- mutate(stl_lead, prop_white = (white/total_pop) * 100)
+```
+
+Create Scatter Plot
+```{r}
+stl_lead_plot <- ggplot(data = stl_lead_prop,
+                        aes(x = prop_white,
+                            y = pct_elevated),) +
+  geom_point(colour = "red4", size = 2) +
+  labs(x = "Proportion White",
+       y = "Percent Children With Elevated Lead",
+       caption = "The graph above shows a trend of the proportion of children 
+       with elevated levels of lead in their blood decreasing as the proportion 
+       of the population who identify as white increases")
+  
+  
+stl_lead_plot
+                          
+```
+#Histogram 
+
+```{r}
+pct_elevated_hist <- ggplot(data = stl_lead_prop, 
+                            aes(x = pct_elevated)) +
+  geom_histogram(colour = "thistle4", 
+                 binwidth = 2, 
+                 fill = "thistle3") +
+  labs(x = "Percent of Children with Elevated Lead in Blood")
+
+
+pct_elevated_hist
+```
+
+Save plot
+```{r}
+ggsave(here::here("figs", "lead_level_hist.jpg"))
+```
+
